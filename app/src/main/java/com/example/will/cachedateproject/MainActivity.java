@@ -30,7 +30,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        /*----------------字节流----------------------------*/
+        /*----------------字节流--------------------------------------------------------*/
 //        getFilePath(this, "test");
 //
 //        writeFile();
@@ -38,18 +38,87 @@ public class MainActivity extends AppCompatActivity {
 //
 //        readTxt();
 //        writeTxt();
-
-//        copyFile();
 //
+//        /*-----原始的流读写-----*/
+//        copyFile();
 //        bufferCopyFile();
 
 
-        /*----------------字符流----------------------------*/
+        /*----------------字符流--------------------------------------------------------*/
 
+        /*-----原始的流读写-----*/
+//        fileReader();
+//        fileWriter();
+        fileCopy();
+
+    }
+
+    private void fileCopy() {
+        String path = getFilesDir() + File.separator + "test.txt";
+        String pathCopy = getFilesDir() + File.separator + "testcopy.txt";
+        FileReader fileReader = null;
+        FileWriter fileWriter = null;
+        try {
+            fileReader = new FileReader(path);
+            fileWriter = new FileWriter(pathCopy);
+
+//            1,一个字节一个字节的读写
+            int b = -1;
+            while ((b = fileReader.read()) != -1) {
+                fileWriter.write(b);
+            }
+
+//            2,指定数组大小,因为不知道码表所以没有avaiable.
+            char[] arr = new char[1024];
+            int c = -1;
+            while ((c = fileReader.read(arr)) != -1) {
+                fileWriter.write(arr);
+            }
+
+//           3,使用自带缓冲流buffer(关闭的时候和字节流一样也是只关闭buffer)
+            BufferedReader bufferedReader = new BufferedReader(fileReader);
+//            使用指定的码表读文件,写文件也是类似.
+//            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(new FileInputStream(path), "UTF-8"));
+            BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
+            int ch;
+            while ((ch = bufferedReader.read()) != -1) {
+                bufferedWriter.write(ch);
+            }
+
+//            4,使用特有的readLine
+            String line = null;
+            while ((line = bufferedReader.readLine()) != null) {
+                bufferedWriter.write(line);
+                bufferedWriter.newLine();
+            }
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (fileReader != null) {
+                try {
+                    fileReader.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (fileWriter != null) {
+                try {
+                    fileWriter.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    private void fileWriter() {
         String path = getFilesDir() + File.separator + "test.txt";
         FileWriter fileWriter = null;
         try {
-            fileWriter = new FileWriter(path,true);
+            fileWriter = new FileWriter(path, true);
             fileWriter.write("追加的");
         } catch (IOException e) {
             e.printStackTrace();
@@ -62,7 +131,6 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         }
-
     }
 
     @NonNull
@@ -73,7 +141,8 @@ public class MainActivity extends AppCompatActivity {
             fileReader = new FileReader(path);
             int b = -1;
             while ((b = fileReader.read()) != -1) {
-                System.out.println("__" + (char) b);
+//                char进行了码表强转.
+                System.out.println("___" + (char) b);
             }
         } catch (FileNotFoundException e) {
             e.printStackTrace();
