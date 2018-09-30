@@ -1,0 +1,27 @@
+# 一.资源文件
+
+    this.getAssets();  拿到项目的资产文件夹assets
+    this.getResources().getDrawable(id);拿到项目的res文件夹,还可以是this.getResources().getString();等
+
+# 二.文件地址
+
+## 2.1. 外部存贮
+
+mnt或者sdcard,不同厂商地址不对用代码获取即可.九大共有目录:(只有这里是需要用户权限的),Environment来获取,私有目录:(专门设计好的了不要6.0之后的权限)
+
+	context.getExternalFilesDir() 		/mnt/sdcard/Android/data/包名/files     后边参数是文件名.
+	contexr.getExternalCacheDir()		 /mnt/sdcard/Android/data/包名/cache
+
+## 2.2 内部存贮
+
+/data/data/包名 (经测试发现,有些手机上得到的地址也不是/data/data/目录下,可以不予理睬,最后发现是展示正确的即可.)
+
+    context.getFileDir()   		/data/data/xxxxx(包名)/files
+    context.getCacheDir()  		/data/data/xxxxx(包名)/cache 相对来说不重要，保存一些临时的数据，可以随时删掉不影响程序的逻辑
+    Context________   		/data/data/xxxxx(包名)/shared_prefs
+    Context________   		/data/data/xxxxx(包名)/detabases
+
+有包名的路径我们可以使用context来获取,其他的使用Environment来获取.
+
+	openFileOutput(name,mode) 	/data/data/xxxxx(包名)/files 理解第二个参数的含义(设置访问的权限)，第二个参数从哪里获取(Context.MODE_PRIVATE (文件私有，其他程序不可读写), Context.MODE_WORLD_READABLE(全局可写，其他程序可读，但不可写), Context.MODE_WORLD_WRITEABLE全局可写，其他程序可写，但不可读)
+	如果想要可写可读，需要使用Context.MODE_WORLD_READABLE+Context.MODE_WRITEABLE

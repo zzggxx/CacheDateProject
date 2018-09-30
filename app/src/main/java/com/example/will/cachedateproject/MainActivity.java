@@ -1,11 +1,15 @@
 package com.example.will.cachedateproject;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.res.AssetManager;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.widget.Toast;
 
 import java.io.BufferedInputStream;
@@ -24,6 +28,8 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 
 public class MainActivity extends AppCompatActivity {
+
+    private String TAG = "MainActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,11 +51,60 @@ public class MainActivity extends AppCompatActivity {
 
 
         /*----------------字符流--------------------------------------------------------*/
-
         /*-----原始的流读写-----*/
 //        fileReader();
 //        fileWriter();
-        fileCopy();
+        /*-----缓冲流读写-----*/
+//        fileCopy();
+
+        /*--------数据库的简单操作-------------------------------------------------*/
+        ExampleDataBaseOpenHelper dataBaseOpenHelper =
+                new ExampleDataBaseOpenHelper(this, "example2.db", null, 1);
+        SQLiteDatabase db = dataBaseOpenHelper.getReadableDatabase();
+        /*-----1,原始的方式进行增删改查-----*/
+//        增
+//        db.execSQL("insert into student (name,sex) values (?,?)", new Object[]{"will", "男"});
+
+//        删除
+//        db.execSQL("delete from student where name = 'will' ");
+//        db.execSQL("delete from student where name = ? ", new Object[]{"周高雄"});
+
+//        改
+//        db.execSQL("update student set sex='big man___' where name = '周高雄'");
+//        db.execSQL("update student set sex=? where name = ?", new Object[]{"big man", "周高雄"});
+
+//        查
+//        Cursor cursor = db.rawQuery("select sex from student where name = ?", new String[]{"周高雄"});
+//        String string = null;
+//        while (cursor.moveToNext()) {
+//            string = cursor.getString(0);
+//            Log.i(TAG, "onCreate: __" + string);
+//        }
+        /*-----2,android的有返回值的方式进行增删改查-----*/
+//        增
+        ContentValues values = new ContentValues();
+        values.put("name", "vivian");
+        values.put("sex", "women");
+        for (int i = 0; i < 10; i++) {
+            long student = db.insert("student", null, values);
+        }
+//        删
+        int student = db.delete("student", "name = ?", new String[]{"tom"});
+//        改
+        values.put("name", "vivian");
+        db.update("student", values, "name = ?", new String[]{"vivian__"});
+//        查
+        Cursor cursor = db.query(
+                "student", new String[]{"sex"},
+                "name=?", new String[]{"vivian"},
+                null, null, null);
+        boolean result = cursor.moveToNext();
+        String sex = null;
+        if (result) {
+            sex = cursor.getString(0);
+            Log.i(TAG, "onCreate: " + sex);
+        }
+
 
     }
 
