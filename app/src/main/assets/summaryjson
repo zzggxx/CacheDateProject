@@ -1,0 +1,50 @@
+{
+  "total_noassign_num": 0,
+  "total_assign_num": {
+    "name": "其他项目",
+    "value": "10.0"
+  },
+  "this_month_summary": [
+    {
+      "name": "项目业绩",
+      "value": "0.0"
+    },
+    {
+      "name": "外卖业绩",
+      "value": "0.0"
+    },
+    {
+      "name": "卡金业绩",
+      "value": "0.0"
+    }
+  ],
+  "cash_this_month_summary": [
+    {
+      "name": "现金项目业绩",
+      "value": "0.0"
+    },
+    {
+      "name": "现金外卖业绩",
+      "value": "0.0"
+    },
+    {
+      "name": "现金卡金业绩",
+      "value": "0.0"
+    }
+  ],
+  "ranking": null,
+  "card_this_month_summary": [
+    {
+      "name": "销卡项目业绩",
+      "value": "0.0"
+    },
+    {
+      "name": "销卡外卖业绩",
+      "value": "0.0"
+    },
+    {
+      "name": "销卡卡金业绩",
+      "value": "0.0"
+    }
+  ]
+}

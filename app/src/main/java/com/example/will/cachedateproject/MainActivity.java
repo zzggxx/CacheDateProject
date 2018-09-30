@@ -1,16 +1,17 @@
 package com.example.will.cachedateproject;
 
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.res.AssetManager;
-import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.widget.Toast;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -82,29 +83,63 @@ public class MainActivity extends AppCompatActivity {
 //        }
         /*-----2,android的有返回值的方式进行增删改查-----*/
 //        增
-        ContentValues values = new ContentValues();
-        values.put("name", "vivian");
-        values.put("sex", "women");
-        for (int i = 0; i < 10; i++) {
-            long student = db.insert("student", null, values);
-        }
+//        ContentValues values = new ContentValues();
+//        values.put("name", "vivian");
+//        values.put("sex", "women");
+//        for (int i = 0; i < 10; i++) {
+//            long student = db.insert("student", null, values);
+//        }
 //        删
-        int student = db.delete("student", "name = ?", new String[]{"tom"});
+//        int student = db.delete("student", "name = ?", new String[]{"tom"});
 //        改
-        values.put("name", "vivian");
-        db.update("student", values, "name = ?", new String[]{"vivian__"});
+//        values.put("name", "vivian");
+//        db.update("student", values, "name = ?", new String[]{"vivian__"});
 //        查
-        Cursor cursor = db.query(
-                "student", new String[]{"sex"},
-                "name=?", new String[]{"vivian"},
-                null, null, null);
-        boolean result = cursor.moveToNext();
-        String sex = null;
-        if (result) {
-            sex = cursor.getString(0);
-            Log.i(TAG, "onCreate: " + sex);
+//        Cursor cursor = db.query(
+//                "student", new String[]{"sex"},
+//                "name=?", new String[]{"vivian"},
+//                null, null, null);
+//        boolean result = cursor.moveToNext();
+//        String sex = null;
+//        if (result) {
+//            sex = cursor.getString(0);
+//            Log.i(TAG, "onCreate: " + sex);
+//        }
+
+        /*------------------------------json----------------------------------------------*/
+        BufferedReader bufferedReader = null;
+        StringBuffer stringBuffer = null;
+        try {
+            InputStream summaryjson = this.getAssets().open("summaryjson");
+            bufferedReader = new BufferedReader(new InputStreamReader(summaryjson));
+            String line = null;
+            stringBuffer = new StringBuffer();
+            while ((line = bufferedReader.readLine()) != null) {
+                stringBuffer.append(line);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (bufferedReader != null) {
+                try {
+                    bufferedReader.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+//        1,互换:json-String字符串到JSONObject(string串中拿到字段这种方法可以使用),反过来toString()即可:
+        try {
+            JSONObject jsonObject = new JSONObject(stringBuffer.toString());
+            int total_noassign_num = jsonObject.getInt("total_noassign_num");
+            JSONObject total_assign_num = jsonObject.getJSONObject("total_assign_num");
+            JSONArray this_month_summary = jsonObject.getJSONArray("this_month_summary");
+            this_month_summary.toString();
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
 
+//        2,json-String到bean对象.
 
     }
 
