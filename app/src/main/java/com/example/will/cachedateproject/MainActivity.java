@@ -9,6 +9,8 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -31,13 +33,14 @@ import java.io.OutputStreamWriter;
 public class MainActivity extends AppCompatActivity {
 
     private String TAG = "MainActivity";
+    private Gson mGson = new Gson();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        /*----------------字节流--------------------------------------------------------*/
+        /*----------------字节流------------------------------------------------------------------*/
 //        getFilePath(this, "test");
 //
 //        writeFile();
@@ -51,14 +54,14 @@ public class MainActivity extends AppCompatActivity {
 //        bufferCopyFile();
 
 
-        /*----------------字符流--------------------------------------------------------*/
+        /*----------------字符流------------------------------------------------------------------*/
         /*-----原始的流读写-----*/
 //        fileReader();
 //        fileWriter();
         /*-----缓冲流读写-----*/
 //        fileCopy();
 
-        /*--------数据库的简单操作-------------------------------------------------*/
+        /*--------数据库的简单操作-----------------------------------------------------------------*/
         ExampleDataBaseOpenHelper dataBaseOpenHelper =
                 new ExampleDataBaseOpenHelper(this, "example2.db", null, 1);
         SQLiteDatabase db = dataBaseOpenHelper.getReadableDatabase();
@@ -106,7 +109,7 @@ public class MainActivity extends AppCompatActivity {
 //            Log.i(TAG, "onCreate: " + sex);
 //        }
 
-        /*------------------------------json----------------------------------------------*/
+        /*------------------------------json------------------------------------------------------*/
         BufferedReader bufferedReader = null;
         StringBuffer stringBuffer = null;
         try {
@@ -128,19 +131,48 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         }
+        String toString = stringBuffer.toString();
+
+        /*----------------------------------android系统自带的方法----------------------------------*/
+
 //        1,互换:json-String字符串到JSONObject(string串中拿到字段这种方法可以使用),反过来toString()即可:
         try {
-            JSONObject jsonObject = new JSONObject(stringBuffer.toString());
+            JSONObject jsonObject = new JSONObject(toString);
+
             int total_noassign_num = jsonObject.getInt("total_noassign_num");
+
             JSONObject total_assign_num = jsonObject.getJSONObject("total_assign_num");
+            total_assign_num.getString("name");//会抛异常建议使用optString();
+            total_assign_num.optString("name");
+
             JSONArray this_month_summary = jsonObject.getJSONArray("this_month_summary");
             this_month_summary.toString();
+
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
-//        2,json-String到bean对象.
+        /*----------------------------------Google的Gson方法----------------------------------*/
+//        1,json-String到bean对象.
+        SummaryBean summaryBean = mGson.fromJson(toString, SummaryBean.class);
+//        2,bean到json-string
+        String s = mGson.toJson(summaryBean);
 
+
+        Gson gson = new Gson();
+        Foo<Bar> foo = new Foo<Bar>();
+        String s1 = gson.toJson(foo);// May not serialize foo.value correctly
+        Foo foo1 = gson.fromJson(s1, foo.getClass());// Fails to deserialize foo.value as Bar
+
+    }
+
+    class Foo<T> {
+        T value;
+    }
+
+    class Bar {
+        String name;
+        int age;
     }
 
     private void fileCopy() {
