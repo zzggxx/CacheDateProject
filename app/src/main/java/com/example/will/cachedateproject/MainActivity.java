@@ -10,6 +10,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -29,6 +30,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -146,7 +149,11 @@ public class MainActivity extends AppCompatActivity {
             total_assign_num.optString("name");
 
             JSONArray this_month_summary = jsonObject.getJSONArray("this_month_summary");
-            this_month_summary.toString();
+            /*----------泛型擦除,泛型只是在编译时期有用在运行的时候都是Object了,所以Google重新给了一种方法----------*/
+            // ArrayList<TotalAssignNumBean> --> 可以替换成任何泛型,TotalAssignNumBean/HashMap<String,int>等等.type:就是具体的完整的类名.
+            Type type = new TypeToken<ArrayList<TotalAssignNumBean>>() {
+            }.getType();
+            ArrayList<TotalAssignNumBean> list = mGson.fromJson(this_month_summary.toString(), type);
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -154,25 +161,14 @@ public class MainActivity extends AppCompatActivity {
 
         /*----------------------------------Google的Gson方法----------------------------------*/
 //        1,json-String到bean对象.
-        SummaryBean summaryBean = mGson.fromJson(toString, SummaryBean.class);
+//        SummaryBean summaryBean = mGson.fromJson(toString, SummaryBean.class);
+        Type type = new TypeToken<SummaryBean>() {
+        }.getType();
+        SummaryBean summaryBean = mGson.fromJson(toString, type);
 //        2,bean到json-string
         String s = mGson.toJson(summaryBean);
 
 
-        Gson gson = new Gson();
-        Foo<Bar> foo = new Foo<Bar>();
-        String s1 = gson.toJson(foo);// May not serialize foo.value correctly
-        Foo foo1 = gson.fromJson(s1, foo.getClass());// Fails to deserialize foo.value as Bar
-
-    }
-
-    class Foo<T> {
-        T value;
-    }
-
-    class Bar {
-        String name;
-        int age;
     }
 
     private void fileCopy() {
