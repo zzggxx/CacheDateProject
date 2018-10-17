@@ -12,9 +12,13 @@ import java.io.InputStreamReader;
 
 /**
  * log日志统计保存
- *
+ * <p>
  * 使用:在application的onCreate中LogcatHelper.getInstance().start();
  * 在退出程序的时候stop()即可.
+ * <p>
+ * 别忘记权限:
+ * <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+ * <uses-permission android:name="android.permission.READ_LOGS" />
  *
  * @author way
  */
